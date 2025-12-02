@@ -51,11 +51,11 @@ namespace MirroredAtmospherics.Scripts
         /// <summary>
         /// List of mirrored devices to create
         /// </summary>
-        private static MirrorDefinition[] mirrorDefs = new[] {
+        private static readonly MirrorDefinition[] atmoMirrorDefs = new[] {
             new MirrorDefinition("StructureFiltration") {
                 mirrorDisplayName = "Filtration (Mirrored)",
                 mirrorDescription =
-                    "Mirrored version of the standard Filtration Unit",
+                    "Mirrored version of the standard {THING:StructureFiltration}.",
                 postfix = (Thing mirroredDevice) => {
                     // filtration mirroring tweaks
                     FlipTransform(mirroredDevice.FindTransform("InfoScreen"));
@@ -68,7 +68,7 @@ namespace MirroredAtmospherics.Scripts
             new MirrorDefinition("StructureAirConditioner") {
                 mirrorDisplayName = "Air Conditioner (Mirrored)",
                 mirrorDescription =
-                    "Mirrored version of the standard Air Conditioner Unit",
+                    "Mirrored version of the standard {THING:StructureAirConditioner}.",
                 postfix = (Thing mirroredDevice) => {
                     // air conditioner mirroring tweaks
                     // flip info screen (aesthetics)
@@ -83,7 +83,7 @@ namespace MirroredAtmospherics.Scripts
             {
                 mirrorDisplayName = "Electrolyzer (Mirrored)",
                 mirrorDescription =
-                    "Mirrored version of the standard Electrolyzer Unit",
+                    "Mirrored version of the standard {THING:StructureElectrolyzer}.",
                 postfix = (Thing mirroredDevice) => {
                     // flip info screen (aesthetics)
                     FlipTransform(mirroredDevice.FindTransform("InfoScreen"));
@@ -95,7 +95,7 @@ namespace MirroredAtmospherics.Scripts
             {
                 mirrorDisplayName = "H2 Combustor (Mirrored)",
                 mirrorDescription =
-                    "Mirrored version of the standard H2 Combustor Unit",
+                    "Mirrored version of the standard {THING:H2Combustor}.",
                 postfix = (Thing mirroredDevice) => {
                     // flip info screen (aesthetics)
                     FlipTransform(mirroredDevice.FindTransform("InfoScreen"));
