@@ -64,6 +64,7 @@ namespace MirroredAtmospherics.Scripts
                 mirrorDescription =
                     "Mirrored version of the standard {THING:StructureFiltration}.",
                 postfix = (Thing mirroredDevice) => {
+                    FlipTransform(mirroredDevice.FindTransform("SwitchOnOff"));
                     // filtration mirroring tweaks
                     FlipTransform(mirroredDevice.FindTransform("InfoScreen"));
                     FlipTransform(mirroredDevice.FindTransform("BoxColliderSlot2TypeGasFilter"));
@@ -77,6 +78,7 @@ namespace MirroredAtmospherics.Scripts
                 mirrorDescription =
                     "Mirrored version of the standard {THING:StructureAirConditioner}.",
                 postfix = (Thing mirroredDevice) => {
+                    FlipTransform(mirroredDevice.FindTransform("SwitchOnOff"));
                     // air conditioner mirroring tweaks
                     // flip info screen (aesthetics)
                     FlipTransform(mirroredDevice.FindTransform("InfoScreen"));
@@ -92,6 +94,7 @@ namespace MirroredAtmospherics.Scripts
                 mirrorDescription =
                     "Mirrored version of the standard {THING:StructureElectrolyzer}.",
                 postfix = (Thing mirroredDevice) => {
+                    FlipTransform(mirroredDevice.FindTransform("SwitchOnOff"));
                     // flip info screen (aesthetics)
                     FlipTransform(mirroredDevice.FindTransform("InfoScreen"));
                     // update input / output arrow display
@@ -104,6 +107,7 @@ namespace MirroredAtmospherics.Scripts
                 mirrorDescription =
                     "Mirrored version of the standard {THING:H2Combustor}.",
                 postfix = (Thing mirroredDevice) => {
+                    FlipTransform(mirroredDevice.FindTransform("SwitchOnOff"));
                     // flip info screen (aesthetics)
                     FlipTransform(mirroredDevice.FindTransform("InfoScreen"));
                     // update input / output arrow display
@@ -114,8 +118,9 @@ namespace MirroredAtmospherics.Scripts
             {
                 mirrorDisplayName = "Nitrolyzer (Mirrored)",
                 mirrorDescription =
-                    "Mirrored version of the standard Nitrolyzer Unit",
+                    "Mirrored version of the standard {THING:StructureNitrolyzer}",
                 postfix = (Thing mirroredDevice) => {
+                    FlipTransform(mirroredDevice.FindTransform("SwitchOnOff"));
                     // flip info screen (aesthetics)
                     FlipTransform(mirroredDevice.FindTransform("InfoScreen"));
                     // update input / output arrow display
