@@ -5,6 +5,12 @@ using UnityEngine;
 
 namespace MirroredAtmospherics.Scripts
 {
+    struct ConnectionDescription
+    {
+        public NetworkType Type;
+        public ConnectionRole Role;
+    }
+
     /// <summary>
     /// Used to describe a device mirroring to perform
     /// </summary>
@@ -21,6 +27,8 @@ namespace MirroredAtmospherics.Scripts
 
         public string mirrorDisplayName;
         public string mirrorDescription;
+
+        public ConnectionDescription[] connectionsToFlip = {};
 
         public delegate void MirrorPostFix(Thing mirroredThing);
         /// <summary>

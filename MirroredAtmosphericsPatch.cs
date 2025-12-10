@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts;
+using Assets.Scripts.Inventory;
 using Assets.Scripts.Objects;
 using Assets.Scripts.UI;
 using Assets.Scripts.Util;
@@ -31,20 +32,44 @@ namespace MirroredAtmospherics.Scripts
                 mirrorDisplayName = "Filtration (Mirrored)",
                 mirrorDescription =
                     "Mirrored version of the standard {THING:StructureFiltration}.",
+                connectionsToFlip = new[]
+                {
+                    new ConnectionDescription()
+                    {
+                        Type = NetworkType.Pipe,
+                        Role = ConnectionRole.Input
+                    },
+                    new ConnectionDescription()
+                    {
+                        Type = NetworkType.Pipe,
+                        Role = ConnectionRole.Output
+                    }
+                },
                 postfix = mirroredDevice => {
                     FlipTransform(mirroredDevice.FindTransform("SwitchOnOff"));
                     // filtration mirroring tweaks
                     FlipTransform(mirroredDevice.FindTransform("InfoScreen"));
                     FlipTransform(mirroredDevice.FindTransform("BoxColliderSlot2TypeGasFilter"));
                     FlipTransform(mirroredDevice.FindTransform("BoxColliderSlot3TypeGasFilter"));
-                    // update input / output arrow display
-                    InvertInputOutput(mirroredDevice);
                 }
             },
             new MirrorDefinition("StructureAirConditioner") {
                 mirrorDisplayName = "Air Conditioner (Mirrored)",
                 mirrorDescription =
                     "Mirrored version of the standard {THING:StructureAirConditioner}.",
+                connectionsToFlip = new[]
+                {
+                    new ConnectionDescription()
+                    {
+                        Type = NetworkType.Pipe,
+                        Role = ConnectionRole.Input
+                    },
+                    new ConnectionDescription()
+                    {
+                        Type = NetworkType.Pipe,
+                        Role = ConnectionRole.Output
+                    }
+                },
                 postfix = mirroredDevice => {
                     FlipTransform(mirroredDevice.FindTransform("SwitchOnOff"));
                     // air conditioner mirroring tweaks
@@ -52,8 +77,6 @@ namespace MirroredAtmospherics.Scripts
                     FlipTransform(mirroredDevice.FindTransform("InfoScreen"));
                     // flip control screen
                     FlipTransform(mirroredDevice.FindTransform("PanelNormal"));
-                    // update input / output arrow display
-                    InvertInputOutput(mirroredDevice);
                 },
             },
             new MirrorDefinition("StructureElectrolyzer")
@@ -61,12 +84,23 @@ namespace MirroredAtmospherics.Scripts
                 mirrorDisplayName = "Electrolyzer (Mirrored)",
                 mirrorDescription =
                     "Mirrored version of the standard {THING:StructureElectrolyzer}.",
+                connectionsToFlip = new[]
+                {
+                    new ConnectionDescription()
+                    {
+                        Type = NetworkType.PipeLiquid,
+                        Role = ConnectionRole.Input
+                    },
+                    new ConnectionDescription()
+                    {
+                        Type = NetworkType.Pipe,
+                        Role = ConnectionRole.Output
+                    }
+                },
                 postfix = mirroredDevice => {
                     FlipTransform(mirroredDevice.FindTransform("SwitchOnOff"));
                     // flip info screen (aesthetics)
                     FlipTransform(mirroredDevice.FindTransform("InfoScreen"));
-                    // update input / output arrow display
-                    InvertInputOutput(mirroredDevice);
                 }
             },
             new MirrorDefinition("H2Combustor")
@@ -74,12 +108,18 @@ namespace MirroredAtmospherics.Scripts
                 mirrorDisplayName = "H2 Combustor (Mirrored)",
                 mirrorDescription =
                     "Mirrored version of the standard {THING:H2Combustor}.",
+                connectionsToFlip = new[]
+                {
+                    new ConnectionDescription()
+                    {
+                        Type = NetworkType.Pipe,
+                        Role = ConnectionRole.Input
+                    }
+                },
                 postfix = mirroredDevice => {
                     FlipTransform(mirroredDevice.FindTransform("SwitchOnOff"));
                     // flip info screen (aesthetics)
                     FlipTransform(mirroredDevice.FindTransform("InfoScreen"));
-                    // update input / output arrow display
-                    InvertInputOutput(mirroredDevice);
                 }
             },
             new MirrorDefinition("StructureNitrolyzer")
@@ -87,12 +127,28 @@ namespace MirroredAtmospherics.Scripts
                 mirrorDisplayName = "Nitrolyzer (Mirrored)",
                 mirrorDescription =
                     "Mirrored version of the standard {THING:StructureNitrolyzer}",
+                connectionsToFlip = new[]
+                {
+                    new ConnectionDescription()
+                    {
+                        Type = NetworkType.Pipe,
+                        Role = ConnectionRole.Input
+                    },
+                    new ConnectionDescription()
+                    {
+                        Type = NetworkType.Pipe,
+                        Role = ConnectionRole.Input2
+                    },
+                    new ConnectionDescription()
+                    {
+                        Type = NetworkType.Pipe,
+                        Role = ConnectionRole.Output
+                    }
+                },
                 postfix = mirroredDevice => {
                     FlipTransform(mirroredDevice.FindTransform("SwitchOnOff"));
                     // flip info screen (aesthetics)
                     FlipTransform(mirroredDevice.FindTransform("InfoScreen"));
-                    // update input / output arrow display
-                    InvertInputOutput(mirroredDevice);
                 }
             },
             // Phase change devices
@@ -100,11 +156,27 @@ namespace MirroredAtmospherics.Scripts
                 mirrorDisplayName = "Condensation Chamber (Mirrored)",
                 mirrorDescription =
                     "Mirrored version of the {THING:StructureCondensationChamber}",
+                connectionsToFlip = new[]
+                {
+                    new ConnectionDescription()
+                    {
+                        Type = NetworkType.Pipe,
+                        Role = ConnectionRole.Input
+                    },
+                    new ConnectionDescription()
+                    {
+                        Type = NetworkType.PipeLiquid,
+                        Role = ConnectionRole.Output
+                    },
+                    new ConnectionDescription()
+                    {
+                        Type = NetworkType.Pipe,
+                        Role = ConnectionRole.Input2 // acting as heat dump/pump
+                    }
+                },
                 postfix = mirroredDevice => {
                     // flip info screen (aesthetics)
                     FlipPhaseChangeScreenTransform(mirroredDevice.FindTransform("ScreenNoShadow"));
-                    // update input / output arrow display
-                    InvertInputOutput(mirroredDevice);
                     // restore increase/decrease buttons position on setting wheel
                     FlipTransform(mirroredDevice.FindTransform("BoxColliderButton1Trigger"));
                     FlipTransform(mirroredDevice.FindTransform("BoxColliderButton2Trigger"));
@@ -116,11 +188,27 @@ namespace MirroredAtmospherics.Scripts
                 mirrorDisplayName = "Evaporation Chamber (Mirrored)",
                 mirrorDescription =
                     "Mirrored version of the {THING:StructureEvaporationChamber}",
+                connectionsToFlip = new[]
+                {
+                    new ConnectionDescription()
+                    {
+                        Type = NetworkType.PipeLiquid,
+                        Role = ConnectionRole.Input
+                    },
+                    new ConnectionDescription()
+                    {
+                        Type = NetworkType.Pipe,
+                        Role = ConnectionRole.Output
+                    },
+                    new ConnectionDescription()
+                    {
+                        Type = NetworkType.Pipe,
+                        Role = ConnectionRole.Input2 // acting as heat dump/pump
+                    }
+                },
                 postfix = mirroredDevice => {
                     // flip info screen (aesthetics)
                     FlipPhaseChangeScreenTransform(mirroredDevice.FindTransform("ScreenNoShadow"));
-                    // update input / output arrow display
-                    InvertInputOutput(mirroredDevice);
                     // restore increase/decrease buttons position on setting wheel
                     FlipTransform(mirroredDevice.FindTransform("BoxColliderButton1Trigger"));
                     FlipTransform(mirroredDevice.FindTransform("BoxColliderButton2Trigger"));
@@ -136,6 +224,50 @@ namespace MirroredAtmospherics.Scripts
         // filtering / search optimization
         private static readonly List<MultiConstructor> Constructors = new List<MultiConstructor>();
         private static readonly List<Thing> Devices = new List<Thing>();
+
+        [HarmonyPatch(typeof(InventoryManager), "SetupConstructionCursors")]
+        [HarmonyPostfix]
+        [UsedImplicitly]
+        static private void MirrorOpenEnds(Dictionary<string, Structure> ____constructionCursors)
+        {
+            foreach (var mirrorDef in atmoMirrorDefs)
+            {
+                if (____constructionCursors.TryGetValue(mirrorDef.mirrorName, out Structure structure))
+                {
+                    var mirroredDevice = structure.GetComponent<Thing>();
+                    if (mirroredDevice != null)
+                    {
+                        SmallGrid smGrid = mirroredDevice.GetComponent<SmallGrid>();
+                        foreach (Connection conn in smGrid.OpenEnds)
+                        {
+                            if (mirrorDef.connectionsToFlip.Any(
+                                connDesc =>
+                                    connDesc.Type == conn.ConnectionType
+                                    && connDesc.Role == conn.ConnectionRole
+                                ))
+                            {
+                                if (conn.HelperRenderer != null)
+                                {
+                                    conn.HelperRenderer.gameObject.transform.Rotate(0, 180, 0);
+                                }
+                                else
+                                {
+                                    Log($"Error: can't find HelperRenderer on {conn.ConnectionType} {conn.ConnectionRole} connection of {mirrorDef.mirrorName}");
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Log("No thing on structure");
+                    }
+                }
+                else
+                {
+                    Log($"{mirrorDef.mirrorName}: NOT FOUND");
+                }
+            }
+        }
 
         [HarmonyPatch(typeof(Prefab), "LoadAll")]
         [HarmonyPrefix]
@@ -265,11 +397,7 @@ namespace MirroredAtmospherics.Scripts
                 // update blueprint wireframe
                 Wireframe blueprintWireframe = mirroredThing.Blueprint.GetComponent<Wireframe>();
                 // Flip wireframe
-                blueprintWireframe?.WireframeEdges.ForEach(edge =>
-                {
-                    edge.Point1 = new Vector3(-edge.Point1.x, edge.Point1.y, edge.Point1.z);
-                    edge.Point2 = new Vector3(-edge.Point2.x, edge.Point2.y, edge.Point2.z);
-                });
+                FlipWireframe(blueprintWireframe);
             }
 
             /// Add to the game as an asset
@@ -284,35 +412,13 @@ namespace MirroredAtmospherics.Scripts
             transform.localScale = new Vector3(-1, 1, 1);
         }
 
-        /// <summary>
-        /// Invert the role of each IO connection in the device
-        /// </summary>
-        /// <param name="mirroredDevice"></param>
-        public static void InvertInputOutput(Thing mirroredDevice)
+        private static void FlipWireframe(Wireframe wireframe)
         {
-
-            SmallGrid smGrid = mirroredDevice.GetComponent<SmallGrid>();
-            Connection input = smGrid.OpenEnds.Find(x => x.ConnectionRole == ConnectionRole.Input);
-            Connection input2 = smGrid.OpenEnds.Find(x => x.ConnectionRole == ConnectionRole.Input2);
-            Connection output = smGrid.OpenEnds.Find(x => x.ConnectionRole == ConnectionRole.Output);
-            Connection output2 = smGrid.OpenEnds.Find(x => x.ConnectionRole == ConnectionRole.Output2);
-
-            if (input != null)
+            wireframe?.WireframeEdges.ForEach(edge =>
             {
-                input.ConnectionRole = ConnectionRole.Output;
-            }
-            if (input2 != null)
-            {
-                input2.ConnectionRole = ConnectionRole.Output2;
-            }
-            if (output != null)
-            {
-                output.ConnectionRole = ConnectionRole.Input;
-            }
-            if (output2 != null)
-            {
-                output2.ConnectionRole = ConnectionRole.Input2;
-            }
+                edge.Point1 = new Vector3(-edge.Point1.x, edge.Point1.y, edge.Point1.z);
+                edge.Point2 = new Vector3(-edge.Point2.x, edge.Point2.y, edge.Point2.z);
+            });
         }
 
         private static void FlipPhaseChangeScreenTransform(Transform screen)
