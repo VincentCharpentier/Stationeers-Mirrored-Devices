@@ -200,10 +200,6 @@ namespace MirroredAtmospherics.Scripts
         // permanent hidden object to store the new prefabs we will create
         private static readonly GameObject HiddenParent = new GameObject("~HiddenGameObject");
 
-        // filtering / search optimization
-        private static readonly List<MultiConstructor> Constructors = new List<MultiConstructor>();
-        private static readonly List<Thing> Devices = new List<Thing>();
-
         [HarmonyPatch(typeof(InventoryManager), "SetupConstructionCursors")]
         [HarmonyPostfix]
         [UsedImplicitly]
@@ -257,9 +253,27 @@ namespace MirroredAtmospherics.Scripts
             UnityEngine.Object.DontDestroyOnLoad(HiddenParent.gameObject);
             HiddenParent.SetActive(value: false);
 
-            Log("Prefiltering assets");
-            // Load wireframe data
-            // prefilter data for load time optimization
+            FindMirrorInfos();
+
+            Log("Mirroring devices...");
+            foreach (var mirrorDef in atmoMirrorDefs)
+            {
+                if (mirrorDef.deviceToMirror == null)
+                {
+                    Log($"Error: device not found {mirrorDef.deviceName}");
+                }
+                else
+                {
+                    MirrorAtmosphericDevice(mirrorDef);
+                }
+            }
+
+            Log("All done");
+        }
+
+        static private void FindMirrorInfos()
+        {
+            // prefilter data for load time optimization and find mirror informations
             WorldManager.Instance.SourcePrefabs.ForEach(thing =>
             {
                 if (thing == null)
@@ -267,9 +281,16 @@ namespace MirroredAtmospherics.Scripts
                     return;
                 }
                 var ctor = thing.GetComponent<MultiConstructor>();
-                if (ctor != null)
+                if (ctor != null && ctor.Constructables != null)
                 {
-                    Constructors.Add(ctor);
+                    foreach (var mirrorDef in atmoMirrorDefs)
+                    {
+                        if (ctor.Constructables.Find(p => p != null && p.name == mirrorDef.deviceName) != null)
+                        {
+                            mirrorDef.constructor = ctor;
+                            // don't break, a constructor can have multiple devices to mirror
+                        }
+                    }
                 }
                 else if (thing.gameObject != null)
                 {
@@ -277,20 +298,12 @@ namespace MirroredAtmospherics.Scripts
                     {
                         if (thing.name == mirrorDef.deviceName)
                         {
-                            Devices.Add(thing);
+                            mirrorDef.deviceToMirror = thing;
                             break;
                         }
                     }
                 }
             });
-
-            Log("Mirroring devices...");
-            foreach (var mirrorDef in atmoMirrorDefs)
-            {
-                MirrorAtmosphericDevice(mirrorDef);
-            }
-
-            Log("All done");
         }
 
         static private void MirrorAtmosphericDevice(MirrorDefinition mirrorDef)
@@ -313,31 +326,21 @@ namespace MirroredAtmospherics.Scripts
 
         static private void AddToConstructor(MirrorDefinition mirrorDef, Thing mirroredDevice)
         {
-            var ctors = FindConstructors(mirrorDef.deviceName);
-            foreach (var deviceCtor in ctors)
+            if (mirrorDef.constructor != null)
             {
-                int insertIndex = deviceCtor.Constructables.FindIndex(p => p.name == mirrorDef.deviceName);
+                int insertIndex = mirrorDef.constructor.Constructables.FindIndex(p => p.name == mirrorDef.deviceName);
                 Structure newStruct = mirroredDevice as Structure;
-                deviceCtor.Constructables.Insert(insertIndex + 1, mirroredDevice as Structure);
+                mirrorDef.constructor.Constructables.Insert(insertIndex + 1, mirroredDevice as Structure);
             }
-        }
-
-        static private MultiConstructor[] FindConstructors(string deviceName)
-        {
-            return Constructors.FindAll(thing =>
+            else
             {
-                var ctor = thing as MultiConstructor;
-                if (ctor != null && ctor.Constructables != null)
-                {
-                    return ctor.Constructables.Find(p => p != null && p.name == deviceName) != null;
-                }
-                return false;
-            }).Select(thing => thing as MultiConstructor).ToArray();
+                Log($"No constructor for device {mirrorDef.deviceName}");
+            }
         }
 
         static private Thing CreateMirroredThing(MirrorDefinition mirrorDef)
         {
-            var device = Devices.Find(p => p != null && p.name == mirrorDef.deviceName);
+            var device = mirrorDef.deviceToMirror;
 
             if (device == null)
             {

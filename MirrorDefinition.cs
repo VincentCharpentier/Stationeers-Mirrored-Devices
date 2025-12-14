@@ -27,7 +27,11 @@ namespace MirroredAtmospherics.Scripts
 
         public string mirrorDescription;
 
-        public ConnectionDescription[] connectionsToFlip = {};
+        public ConnectionDescription[] connectionsToFlip = { };
+
+        public Thing deviceToMirror;
+
+        public MultiConstructor constructor;
 
         public delegate void MirrorPostFix(Thing mirroredThing);
         /// <summary>
