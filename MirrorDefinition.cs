@@ -25,7 +25,6 @@ namespace MirroredAtmospherics.Scripts
         public string mirrorName { get; private set; }
         public int mirrorHash { get; private set; }
 
-        public string mirrorDisplayName;
         public string mirrorDescription;
 
         public ConnectionDescription[] connectionsToFlip = {};

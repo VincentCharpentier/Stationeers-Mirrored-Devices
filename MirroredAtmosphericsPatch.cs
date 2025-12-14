@@ -29,7 +29,6 @@ namespace MirroredAtmospherics.Scripts
         /// </summary>
         private static readonly MirrorDefinition[] atmoMirrorDefs = new[] {
             new MirrorDefinition("StructureFiltration") {
-                mirrorDisplayName = "Filtration (Mirrored)",
                 connectionsToFlip = new[]
                 {
                     new ConnectionDescription()
@@ -52,7 +51,6 @@ namespace MirroredAtmospherics.Scripts
                 }
             },
             new MirrorDefinition("StructureAirConditioner") {
-                mirrorDisplayName = "Air Conditioner (Mirrored)",
                 connectionsToFlip = new[]
                 {
                     new ConnectionDescription()
@@ -77,7 +75,6 @@ namespace MirroredAtmospherics.Scripts
             },
             new MirrorDefinition("StructureElectrolyzer")
             {
-                mirrorDisplayName = "Electrolyzer (Mirrored)",
                 connectionsToFlip = new[]
                 {
                     new ConnectionDescription()
@@ -99,7 +96,6 @@ namespace MirroredAtmospherics.Scripts
             },
             new MirrorDefinition("H2Combustor")
             {
-                mirrorDisplayName = "H2 Combustor (Mirrored)",
                 connectionsToFlip = new[]
                 {
                     new ConnectionDescription()
@@ -116,7 +112,6 @@ namespace MirroredAtmospherics.Scripts
             },
             new MirrorDefinition("StructureNitrolyzer")
             {
-                mirrorDisplayName = "Nitrolyzer (Mirrored)",
                 connectionsToFlip = new[]
                 {
                     new ConnectionDescription()
@@ -143,7 +138,6 @@ namespace MirroredAtmospherics.Scripts
             },
             // Phase change devices
             new MirrorDefinition("StructureCondensationChamber") {
-                mirrorDisplayName = "Condensation Chamber (Mirrored)",
                 connectionsToFlip = new[]
                 {
                     new ConnectionDescription()
@@ -173,7 +167,6 @@ namespace MirroredAtmospherics.Scripts
                 }
             },
             new MirrorDefinition("StructureEvaporationChamber") {
-                mirrorDisplayName = "Evaporation Chamber (Mirrored)",
                 connectionsToFlip = new[]
                 {
                     new ConnectionDescription()
@@ -420,10 +413,11 @@ namespace MirroredAtmospherics.Scripts
 
             foreach (var mirrorDef in atmoMirrorDefs)
             {
+                var originalName = __instance.LanguagePages[0].Things.Find(x => x.Key == mirrorDef.deviceName).Value;
                 __instance.LanguagePages[0].Things.Add(new Localization.RecordThing
                 {
                     Key = mirrorDef.mirrorName,
-                    Value = mirrorDef.mirrorDisplayName,
+                    Value = $"{originalName} (Mirrored)",
                     ThingDescription =
                     mirrorDef.mirrorDescription
                 });
