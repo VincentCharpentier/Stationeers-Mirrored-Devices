@@ -416,7 +416,12 @@ namespace MirroredAtmospherics.Scripts
 
             foreach (var mirrorDef in atmoMirrorDefs)
             {
-                var originalName = __instance.LanguagePages[0].Things.Find(x => x.Key == mirrorDef.deviceName).Value;
+                var originalName = __instance.LanguagePages[0].Things.Find(x => x.Key == mirrorDef.deviceName)?.Value;
+                if (originalName == null)
+                {
+                    originalName = "Missing name";
+                    Log($"Missing display name for {mirrorDef.deviceName}");
+                }
                 __instance.LanguagePages[0].Things.Add(new Localization.RecordThing
                 {
                     Key = mirrorDef.mirrorName,
