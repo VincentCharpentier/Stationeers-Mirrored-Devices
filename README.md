@@ -30,3 +30,16 @@ Add the mod from Steam: https://steamcommunity.com/workshop/filedetails/?id=3614
 # Contributions
 
 If you want to contribute with this mod, feel free to create a pull request.
+
+To build from source you will need to add a `Directory.Build.targets` file at the root of the repository with the following content, and customize the `GameDir` path to point to your Stationeers installation:
+```xml
+<Project>
+	<PropertyGroup>
+		<GameDir>E:\SteamLibrary\steamapps\common\Stationeers</GameDir>
+		<ReferencePath>
+			$(GameDir)\Stationeers_Data\Managed\
+		</ReferencePath>
+		<AssemblySearchPaths>$(AssemblySearchPaths);$(ReferencePath);</AssemblySearchPaths>
+	</PropertyGroup>
+</Project>
+```

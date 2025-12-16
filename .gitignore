@@ -1,3 +1,4 @@
+Directory.Build.targets
 obj/*
 externals/*
 bin/Debug/*
