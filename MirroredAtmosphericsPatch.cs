@@ -195,6 +195,76 @@ namespace MirroredAtmospherics.Scripts
                     FlipTransform(mirroredDevice.FindTransform("SwitchOnOff"));
                 }
             },
+            new MirrorDefinition("StructureLargeDirectHeatExchangeGastoLiquid") {
+                postfix = mirroredDevice => {
+                    // flip info screen (aesthetics)
+                    FlipTransform(mirroredDevice.FindTransform("PhysicalInfoPannel"));
+                }
+            },
+            new MirrorDefinition("StructureSuperLargeDirectHeatExchangeGastoLiquid") {
+                postfix = mirroredDevice => {
+                    // flip info screen (aesthetics)
+                    FlipTransform(mirroredDevice.FindTransform("PhysicalInfoPannel"));
+                }
+            },
+            new MirrorDefinition("StructureSorter") {
+                connectionsToFlip = new[]
+                {
+                    new ConnectionDescription()
+                    {
+                        Type = NetworkType.Chute,
+                        Role = ConnectionRole.Input
+                    },
+                    new ConnectionDescription()
+                    {
+                        Type = NetworkType.Chute,
+                        Role = ConnectionRole.Output
+                    },
+                    new ConnectionDescription()
+                    {
+                        Type = NetworkType.Chute,
+                        Role = ConnectionRole.Output2
+                    }
+                },
+                postfix = mirroredDevice => {
+                    // fix switch collider display
+                    FlipTransform(mirroredDevice.transform.Find("SwitchOnOff"));
+                    FlipTransform(mirroredDevice.transform.Find("ImportChuteBin/BinImport/ImportSlot"));
+                    FlipTransform(mirroredDevice.transform.Find("ExportChuteBin/ExportSlot"));
+                    FlipTransform(mirroredDevice.transform.Find("Export2ChuteBin/Export2Slot"));
+                    FlipTransform(mirroredDevice.transform.Find("BoxColliderTriggerEntry"));
+                    FlipTransform(mirroredDevice.transform.Find("BoxColliderSlot4TriggerTypeDataDisk"));
+                }
+            },
+            new MirrorDefinition("StructureLogicSorter") {
+                connectionsToFlip = new[]
+                {
+                    new ConnectionDescription()
+                    {
+                        Type = NetworkType.Chute,
+                        Role = ConnectionRole.Input
+                    },
+                    new ConnectionDescription()
+                    {
+                        Type = NetworkType.Chute,
+                        Role = ConnectionRole.Output
+                    },
+                    new ConnectionDescription()
+                    {
+                        Type = NetworkType.Chute,
+                        Role = ConnectionRole.Output2
+                    }
+                },
+                postfix = mirroredDevice => {
+                    // fix switch collider display
+                    FlipTransform(mirroredDevice.transform.Find("SwitchOnOff"));
+                    FlipTransform(mirroredDevice.transform.Find("ImportChuteBin/BinImport/ImportSlot"));
+                    FlipTransform(mirroredDevice.transform.Find("ExportChuteBin/ExportSlot"));
+                    FlipTransform(mirroredDevice.transform.Find("Export2ChuteBin/Export2Slot"));
+                    FlipTransform(mirroredDevice.transform.Find("BoxColliderTriggerEntry"));
+                    FlipTransform(mirroredDevice.transform.Find("BoxColliderSlot4TriggerTypeDataDisk"));
+                }
+            },
         };
 
         // permanent hidden object to store the new prefabs we will create
@@ -383,7 +453,6 @@ namespace MirroredAtmospherics.Scripts
             }
 
             /// Add to the game as an asset
-            Prefab.RegisterExisting(mirroredThing);
             WorldManager.Instance.SourcePrefabs.Add(mirroredThing);
 
             return mirroredThing;
