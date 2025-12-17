@@ -1,12 +1,15 @@
 ﻿using Assets.Scripts;
 using Assets.Scripts.Inventory;
 using Assets.Scripts.Objects;
+using Assets.Scripts.Objects.Items;
 using Assets.Scripts.UI;
 using Assets.Scripts.Util;
 using HarmonyLib;
 using JetBrains.Annotations;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 
@@ -265,6 +268,134 @@ namespace MirroredAtmospherics.Scripts
                     FlipTransform(mirroredDevice.transform.Find("BoxColliderSlot4TriggerTypeDataDisk"));
                 }
             },
+            new MirrorDefinition("StructureVolumePump") {
+                connectionsToFlip = new[]
+                {
+                    new ConnectionDescription()
+                    {
+                        Type = NetworkType.PowerAndData,
+                        Role = ConnectionRole.None
+                    }
+                },
+                postfix = mirroredDevice => {
+                    // restore increase/decrease buttons position on setting wheel
+                    FlipTransform(mirroredDevice.FindTransform("BoxColliderOnOffTrigger"));
+                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton1Trigger"));
+                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton2Trigger"));
+                }
+            },
+            new MirrorDefinition("StructurePressureRegulator") {
+                connectionsToFlip = new[]
+                {
+                    new ConnectionDescription()
+                    {
+                        Type = NetworkType.PowerAndData,
+                        Role = ConnectionRole.None
+                    }
+                },
+                postfix = mirroredDevice => {
+                    // restore increase/decrease buttons position on setting wheel
+                    FlipTransform(mirroredDevice.FindTransform("BoxColliderOnOffTrigger001"));
+                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton1Trigger001"));
+                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton2Trigger001"));
+                }
+            },
+            new MirrorDefinition("StructureBackPressureRegulator") {
+                connectionsToFlip = new[]
+                {
+                    new ConnectionDescription()
+                    {
+                        Type = NetworkType.PowerAndData,
+                        Role = ConnectionRole.None
+                    }
+                },
+                postfix = mirroredDevice => {
+                    // restore increase/decrease buttons position on setting wheel
+                    FlipTransform(mirroredDevice.FindTransform("BoxColliderOnOffTrigger003"));
+                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton1Trigger003"));
+                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton2Trigger003"));
+                }
+            },
+            new MirrorDefinition("StructurePressurantValve") {
+                connectionsToFlip = new[]
+                {
+                    new ConnectionDescription()
+                    {
+                        Type = NetworkType.PowerAndData,
+                        Role = ConnectionRole.None
+                    }
+                },
+                postfix = mirroredDevice => {
+                    // restore increase/decrease buttons position on setting wheel
+                    FlipTransform(mirroredDevice.FindTransform("BoxColliderOnOffTrigger"));
+                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton1Trigger001"));
+                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton2Trigger001"));
+                }
+            },
+            new MirrorDefinition("StructurePurgeValve") {
+                connectionsToFlip = new[]
+                {
+                    new ConnectionDescription()
+                    {
+                        Type = NetworkType.PowerAndData,
+                        Role = ConnectionRole.None
+                    }
+                },
+                postfix = mirroredDevice => {
+                    // restore increase/decrease buttons position on setting wheel
+                    FlipTransform(mirroredDevice.FindTransform("BoxColliderOnOffTrigger"));
+                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton1Trigger"));
+                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton2Trigger"));
+                }
+            },
+            new MirrorDefinition("StructureLiquidVolumePump") {
+                connectionsToFlip = new[]
+                {
+                    new ConnectionDescription()
+                    {
+                        Type = NetworkType.PowerAndData,
+                        Role = ConnectionRole.None
+                    }
+                },
+                postfix = mirroredDevice => {
+                    // restore increase/decrease buttons position on setting wheel
+                    FlipTransform(mirroredDevice.FindTransform("BoxColliderOnOffTrigger"));
+                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton1Trigger"));
+                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton2Trigger"));
+                }
+            },
+            new MirrorDefinition("StructureLiquidPressureRegulator") {
+                connectionsToFlip = new[]
+                {
+                    new ConnectionDescription()
+                    {
+                        Type = NetworkType.PowerAndData,
+                        Role = ConnectionRole.None
+                    }
+                },
+                postfix = mirroredDevice => {
+                    // restore increase/decrease buttons position on setting wheel
+                    FlipTransform(mirroredDevice.FindTransform("BoxColliderOnOffTrigger001"));
+                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton1Trigger001"));
+                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton2Trigger001"));
+                }
+            },
+            new MirrorDefinition("StructureBackLiquidPressureRegulator") {
+                connectionsToFlip = new[]
+                {
+                    new ConnectionDescription()
+                    {
+                        Type = NetworkType.PowerAndData,
+                        Role = ConnectionRole.None
+                    }
+                },
+                postfix = mirroredDevice => {
+                    // restore increase/decrease buttons position on setting wheel
+                    FlipTransform(mirroredDevice.FindTransform("BoxColliderOnOffTrigger003"));
+                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton1Trigger003"));
+                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton2Trigger003"));
+                }
+            },
         };
 
         // permanent hidden object to store the new prefabs we will create
@@ -341,24 +472,146 @@ namespace MirroredAtmospherics.Scripts
             Log("All done");
         }
 
+        static private MultiConstructor ConvertConstructorToMultiConstructor(Constructor ctor, int prefabIndex)
+        {
+            // Store BuildStructure before destroying the component
+            var buildStructure = ctor.BuildStructure;
+
+            var mctor = ctor.gameObject.AddComponent<MultiConstructor>();
+            mctor.Constructables = new List<Structure>() { buildStructure };
+
+            // Copy shared fields from Constructor to MultiConstructor
+            CopySharedFields((Stackable)ctor, (Stackable)mctor);
+
+            // Update BuildState.Tool references and EntryQuantity
+            // This ensures structures built with MultiConstructor can properly deconstruct
+            if (buildStructure != null && buildStructure.BuildStates != null)
+            {
+                foreach (var buildState in buildStructure.BuildStates)
+                {
+                    if (buildState != null && buildState.Tool != null)
+                    {
+                        // If ToolEntry references the Constructor, update it to MultiConstructor
+                        if (buildState.Tool.ToolEntry == ctor)
+                        {
+                            buildState.Tool.ToolEntry = mctor;
+                        }
+                        // Also check ToolEntry2
+                        if (buildState.Tool.ToolEntry2 == ctor)
+                        {
+                            buildState.Tool.ToolEntry2 = mctor;
+                        }
+
+                        // Set EntryQuantity from Constructor.QuantityUsed
+                        // This ensures the correct quantity drops when deconstructing
+                        if (buildState.Tool.ToolEntry == mctor)
+                        {
+                            buildState.Tool.EntryQuantity = ctor.QuantityUsed;
+                        }
+                    }
+                }
+            }
+
+            // Update SourcePrefabs to point to the MultiConstructor
+            WorldManager.Instance.SourcePrefabs[prefabIndex] = mctor;
+
+            // Destroy the Constructor component immediately
+            UnityEngine.Object.DestroyImmediate(ctor);
+
+            return mctor;
+        }
+
+        public static void CopySharedFields(Stackable source, Stackable target)
+        {
+            // Copy fields from Stackable all the way up to Thing
+            // Walk up the inheritance chain: Stackable -> Item -> DynamicThing -> Thing
+            var currentType = typeof(Stackable);
+            var thingType = typeof(Thing);
+
+            while (currentType != null && thingType.IsAssignableFrom(currentType))
+            {
+                foreach (var field in currentType.GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic))
+                {
+                    // Skip compiler-generated fields
+                    if (field.IsNotSerialized || field.Name.Contains("<"))
+                        continue;
+
+                    try
+                    {
+                        var value = field.GetValue(source);
+                        // If the field value is a reference to the source object itself, replace it with target
+                        if (ReferenceEquals(value, source))
+                        {
+                            field.SetValue(target, target);
+                        }
+                        // Handle List<Interactable> - update Parent references inside
+                        // Exclude arrays - they implement IList but should be copied by reference
+                        else if (value is System.Collections.IList list && !value.GetType().IsArray && list.Count > 0)
+                        {
+                            var newList = System.Activator.CreateInstance(value.GetType()) as System.Collections.IList;
+                            foreach (var item in list)
+                            {
+                                if (item is Interactable interactable && interactable.Parent == source)
+                                {
+                                    interactable.Parent = target;
+                                }
+                                newList.Add(item);
+                            }
+                            field.SetValue(target, newList);
+                        }
+                        else
+                        {
+                            field.SetValue(target, value);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Ignore fields that can't be copied
+                        Log($"Failed to copy field {field.Name} from {currentType.Name}: {ex.Message}");
+                    }
+                }
+
+                // Stop at Thing to avoid copying MonoBehaviour/Component fields
+                if (currentType == thingType)
+                    break;
+
+                currentType = currentType.BaseType;
+            }
+        }
+
         static private void FindMirrorInfos()
         {
             // prefilter data for load time optimization and find mirror informations
-            WorldManager.Instance.SourcePrefabs.ForEach(thing =>
+            for (int prefabIndex = 0; prefabIndex < WorldManager.Instance.SourcePrefabs.Count; prefabIndex++)
             {
+                var thing = WorldManager.Instance.SourcePrefabs[prefabIndex];
                 if (thing == null)
                 {
-                    return;
+                    continue;
                 }
-                var ctor = thing.GetComponent<MultiConstructor>();
-                if (ctor != null && ctor.Constructables != null)
+                var ctor = thing.GetComponent<Constructor>();
+                var multiCtor = thing.GetComponent<MultiConstructor>();
+                if (multiCtor != null && multiCtor.Constructables != null)
                 {
                     foreach (var mirrorDef in atmoMirrorDefs)
                     {
-                        if (ctor.Constructables.Find(p => p != null && p.name == mirrorDef.deviceName) != null)
+                        if (multiCtor.Constructables.Find(p => p != null && p.name == mirrorDef.deviceName) != null)
                         {
-                            mirrorDef.constructor = ctor;
-                            // don't break, a constructor can have multiple devices to mirror
+                            mirrorDef.constructor = multiCtor;
+                            // don't break, a multiConstructor can have multiple devices to mirror
+                        }
+                    }
+                }
+                else if (ctor != null)
+                {
+                    foreach (var mirrorDef in atmoMirrorDefs)
+                    {
+                        if (ctor.BuildStructure != null && ctor.BuildStructure.name == mirrorDef.deviceName)
+                        {
+                            multiCtor = ConvertConstructorToMultiConstructor(ctor, prefabIndex);
+                            mirrorDef.constructor = multiCtor;
+                            // single constructor can only match one mirror description
+                            break;
                         }
                     }
                 }
@@ -373,7 +626,7 @@ namespace MirroredAtmospherics.Scripts
                         }
                     }
                 }
-            });
+            }
         }
 
         static private void MirrorAtmosphericDevice(MirrorDefinition mirrorDef)
@@ -391,7 +644,7 @@ namespace MirroredAtmospherics.Scripts
             AddToConstructor(mirrorDef, mirroredDevice);
 
             // run mirror specific postfix
-            mirrorDef.postfix(mirroredDevice);
+            if (mirrorDef.postfix != null) mirrorDef.postfix(mirroredDevice);
         }
 
         static private void AddToConstructor(MirrorDefinition mirrorDef, Thing mirroredDevice)
