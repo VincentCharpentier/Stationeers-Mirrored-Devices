@@ -412,10 +412,10 @@ namespace MirroredAtmospherics.Scripts
         {
             // Store BuildStructure before destroying the component
             var buildStructure = ctor.BuildStructure;
-            
+
             var mctor = ctor.gameObject.AddComponent<MultiConstructor>();
             mctor.Constructables = new List<Structure>() { buildStructure };
-            
+
             // Copy shared fields from Constructor to MultiConstructor
             CopySharedFields((Stackable)ctor, (Stackable)mctor);
 
@@ -447,13 +447,13 @@ namespace MirroredAtmospherics.Scripts
                     }
                 }
             }
-            
+
             // Update SourcePrefabs to point to the MultiConstructor
             WorldManager.Instance.SourcePrefabs[prefabIndex] = mctor;
-            
+
             // Destroy the Constructor component immediately
             UnityEngine.Object.DestroyImmediate(ctor);
-            
+
             return mctor;
         }
 
@@ -463,7 +463,7 @@ namespace MirroredAtmospherics.Scripts
             // Walk up the inheritance chain: Stackable -> Item -> DynamicThing -> Thing
             var currentType = typeof(Stackable);
             var thingType = typeof(Thing);
-            
+
             while (currentType != null && thingType.IsAssignableFrom(currentType))
             {
                 foreach (var field in currentType.GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic))
@@ -471,7 +471,7 @@ namespace MirroredAtmospherics.Scripts
                     // Skip compiler-generated fields
                     if (field.IsNotSerialized || field.Name.Contains("<"))
                         continue;
-                        
+
                     try
                     {
                         var value = field.GetValue(source);
@@ -506,11 +506,11 @@ namespace MirroredAtmospherics.Scripts
                         Log($"Failed to copy field {field.Name} from {currentType.Name}: {ex.Message}");
                     }
                 }
-                
+
                 // Stop at Thing to avoid copying MonoBehaviour/Component fields
                 if (currentType == thingType)
                     break;
-                    
+
                 currentType = currentType.BaseType;
             }
         }
@@ -525,7 +525,7 @@ namespace MirroredAtmospherics.Scripts
                 {
                     continue;
                 }
-                
+
                 var ctor = thing.GetComponent<Constructor>();
                 if (ctor != null && ctor.gameObject != null)
                 {
