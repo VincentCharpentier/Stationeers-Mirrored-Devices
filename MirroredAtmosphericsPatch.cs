@@ -396,6 +396,33 @@ namespace MirroredAtmospherics.Scripts
                     FlipTransform(mirroredDevice.FindTransform("BoxColliderButton2Trigger003"));
                 }
             },
+            new MirrorDefinition("StructureAdvancedFurnace") {
+                connectionsToFlip = new[]
+                {
+                    new ConnectionDescription()
+                    {
+                        Type = NetworkType.Chute,
+                        Role = ConnectionRole.Input
+                    },
+                    new ConnectionDescription()
+                    {
+                        Type = NetworkType.Chute,
+                        Role = ConnectionRole.Output
+                    }
+                },
+                postfix = mirroredDevice => {
+                    // Fix buttons collider
+                    FlipTransform(mirroredDevice.FindTransform("SwitchOnOff"));
+                    FlipTransform(mirroredDevice.FindTransform("ActivateButton"));
+                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton1Trigger005"));
+                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton2Trigger005"));
+                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton3Trigger006"));
+                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton4Trigger006"));
+                    // flip info screen (aesthetics)
+                    FlipTransform(mirroredDevice.FindTransform("ScreenNoShadow"));
+
+                }
+            },
         };
 
         // permanent hidden object to store the new prefabs we will create
