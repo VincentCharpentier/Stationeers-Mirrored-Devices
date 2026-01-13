@@ -16,6 +16,11 @@ namespace MirroredAtmospherics.Scripts
             Debug.Log("[MirroredAtmospherics]: " + line);
         }
 
+        public void Warn(string line)
+        {
+            Debug.LogWarning("[MirroredAtmospherics]: " + line);
+        }
+
         void Awake()
         {
             MirroredAtmosphericsPlugin.Instance = this;

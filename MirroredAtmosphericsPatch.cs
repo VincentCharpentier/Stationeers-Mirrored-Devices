@@ -2,6 +2,7 @@
 using Assets.Scripts.Inventory;
 using Assets.Scripts.Objects;
 using Assets.Scripts.Objects.Items;
+using Assets.Scripts.Objects.Pipes;
 using Assets.Scripts.UI;
 using Assets.Scripts.Util;
 using HarmonyLib;
@@ -27,6 +28,29 @@ namespace MirroredAtmospherics.Scripts
             MirroredAtmosphericsPlugin.Instance.Log(message);
         }
 
+        private static void Warn(string message)
+        {
+            MirroredAtmosphericsPlugin.Instance.Warn(message);
+        }
+
+        private static void LogMissingTransform(string deviceName, string transformName)
+        {
+            Warn($"Warning - {deviceName} - can't find transform {transformName}");
+        }
+
+        private static void TryFlip(Thing device, string transformName)
+        {
+            var transform = device.FindTransform(transformName);
+            if (transform == null)
+            {
+                LogMissingTransform(device.name, transformName);
+            }
+            else
+            {
+                FlipTransform(transform);
+            }
+        }
+
         /// <summary>
         /// List of mirrored devices to create
         /// </summary>
@@ -46,11 +70,11 @@ namespace MirroredAtmospherics.Scripts
                     }
                 },
                 postfix = mirroredDevice => {
-                    FlipTransform(mirroredDevice.FindTransform("SwitchOnOff"));
+                    TryFlip(mirroredDevice, "SwitchOnOff");
                     // filtration mirroring tweaks
-                    FlipTransform(mirroredDevice.FindTransform("InfoScreen"));
-                    FlipTransform(mirroredDevice.FindTransform("BoxColliderSlot2TypeGasFilter"));
-                    FlipTransform(mirroredDevice.FindTransform("BoxColliderSlot3TypeGasFilter"));
+                    TryFlip(mirroredDevice, "InfoScreen");
+                    TryFlip(mirroredDevice, "BoxColliderSlot2TypeGasFilter");
+                    TryFlip(mirroredDevice, "BoxColliderSlot3TypeGasFilter");
                 }
             },
             new MirrorDefinition("StructureAirConditioner") {
@@ -68,12 +92,12 @@ namespace MirroredAtmospherics.Scripts
                     }
                 },
                 postfix = mirroredDevice => {
-                    FlipTransform(mirroredDevice.FindTransform("SwitchOnOff"));
+                    TryFlip(mirroredDevice, "SwitchOnOff");
                     // air conditioner mirroring tweaks
                     // flip info screen (aesthetics)
-                    FlipTransform(mirroredDevice.FindTransform("InfoScreen"));
+                    TryFlip(mirroredDevice, "InfoScreen");
                     // flip control screen
-                    FlipTransform(mirroredDevice.FindTransform("PanelNormal"));
+                    TryFlip(mirroredDevice, "PanelNormal");
                 },
             },
             new MirrorDefinition("StructureElectrolyzer")
@@ -92,9 +116,9 @@ namespace MirroredAtmospherics.Scripts
                     }
                 },
                 postfix = mirroredDevice => {
-                    FlipTransform(mirroredDevice.FindTransform("SwitchOnOff"));
+                    TryFlip(mirroredDevice, "SwitchOnOff");
                     // flip info screen (aesthetics)
-                    FlipTransform(mirroredDevice.FindTransform("InfoScreen"));
+                    TryFlip(mirroredDevice, "InfoScreen");
                 }
             },
             new MirrorDefinition("H2Combustor")
@@ -108,9 +132,9 @@ namespace MirroredAtmospherics.Scripts
                     }
                 },
                 postfix = mirroredDevice => {
-                    FlipTransform(mirroredDevice.FindTransform("SwitchOnOff"));
+                    TryFlip(mirroredDevice, "SwitchOnOff");
                     // flip info screen (aesthetics)
-                    FlipTransform(mirroredDevice.FindTransform("InfoScreen"));
+                    TryFlip(mirroredDevice, "InfoScreen");
                 }
             },
             new MirrorDefinition("StructureNitrolyzer")
@@ -134,9 +158,9 @@ namespace MirroredAtmospherics.Scripts
                     }
                 },
                 postfix = mirroredDevice => {
-                    FlipTransform(mirroredDevice.FindTransform("SwitchOnOff"));
+                    TryFlip(mirroredDevice, "SwitchOnOff");
                     // flip info screen (aesthetics)
-                    FlipTransform(mirroredDevice.FindTransform("InfoScreen"));
+                    TryFlip(mirroredDevice, "InfoScreen");
                 }
             },
             // Phase change devices
@@ -161,12 +185,12 @@ namespace MirroredAtmospherics.Scripts
                 },
                 postfix = mirroredDevice => {
                     // flip info screen (aesthetics)
-                    FlipPhaseChangeScreenTransform(mirroredDevice.FindTransform("ScreenNoShadow"));
+                    TryFlipPhaseChangeScreenTransform(mirroredDevice);
                     // restore increase/decrease buttons position on setting wheel
-                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton1Trigger"));
-                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton2Trigger"));
+                    TryFlip(mirroredDevice, "BoxColliderButton1Trigger");
+                    TryFlip(mirroredDevice, "BoxColliderButton2Trigger");
                     // fix switch collider display
-                    FlipTransform(mirroredDevice.FindTransform("SwitchOnOff"));
+                    TryFlip(mirroredDevice, "SwitchOnOff");
                 }
             },
             new MirrorDefinition("StructureEvaporationChamber") {
@@ -190,24 +214,24 @@ namespace MirroredAtmospherics.Scripts
                 },
                 postfix = mirroredDevice => {
                     // flip info screen (aesthetics)
-                    FlipPhaseChangeScreenTransform(mirroredDevice.FindTransform("ScreenNoShadow"));
+                    TryFlipPhaseChangeScreenTransform(mirroredDevice);
                     // restore increase/decrease buttons position on setting wheel
-                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton1Trigger"));
-                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton2Trigger"));
+                    TryFlip(mirroredDevice, "BoxColliderButton1Trigger");
+                    TryFlip(mirroredDevice, "BoxColliderButton2Trigger");
                     // fix switch collider display
-                    FlipTransform(mirroredDevice.FindTransform("SwitchOnOff"));
+                    TryFlip(mirroredDevice, "SwitchOnOff");
                 }
             },
             new MirrorDefinition("StructureLargeDirectHeatExchangeGastoLiquid") {
                 postfix = mirroredDevice => {
                     // flip info screen (aesthetics)
-                    FlipTransform(mirroredDevice.FindTransform("PhysicalInfoPannel"));
+                    TryFlip(mirroredDevice, "PhysicalInfoPannel");
                 }
             },
             new MirrorDefinition("StructureSuperLargeDirectHeatExchangeGastoLiquid") {
                 postfix = mirroredDevice => {
                     // flip info screen (aesthetics)
-                    FlipTransform(mirroredDevice.FindTransform("PhysicalInfoPannel"));
+                    TryFlip(mirroredDevice, "PhysicalInfoPannel");
                 }
             },
             new MirrorDefinition("StructureSorter") {
@@ -231,12 +255,12 @@ namespace MirroredAtmospherics.Scripts
                 },
                 postfix = mirroredDevice => {
                     // fix switch collider display
-                    FlipTransform(mirroredDevice.transform.Find("SwitchOnOff"));
-                    FlipTransform(mirroredDevice.transform.Find("ImportChuteBin/BinImport/ImportSlot"));
-                    FlipTransform(mirroredDevice.transform.Find("ExportChuteBin/ExportSlot"));
-                    FlipTransform(mirroredDevice.transform.Find("Export2ChuteBin/Export2Slot"));
-                    FlipTransform(mirroredDevice.transform.Find("BoxColliderTriggerEntry"));
-                    FlipTransform(mirroredDevice.transform.Find("BoxColliderSlot4TriggerTypeDataDisk"));
+                    TryFlip(mirroredDevice, "SwitchOnOff");
+                    TryFlip(mirroredDevice, "ImportSlot");
+                    TryFlip(mirroredDevice, "ExportSlot");
+                    TryFlip(mirroredDevice, "Export2Slot");
+                    TryFlip(mirroredDevice, "BoxColliderTriggerEntry");
+                    TryFlip(mirroredDevice, "BoxColliderSlot4TriggerTypeDataDisk");
                 }
             },
             new MirrorDefinition("StructureLogicSorter") {
@@ -260,12 +284,12 @@ namespace MirroredAtmospherics.Scripts
                 },
                 postfix = mirroredDevice => {
                     // fix switch collider display
-                    FlipTransform(mirroredDevice.transform.Find("SwitchOnOff"));
-                    FlipTransform(mirroredDevice.transform.Find("ImportChuteBin/BinImport/ImportSlot"));
-                    FlipTransform(mirroredDevice.transform.Find("ExportChuteBin/ExportSlot"));
-                    FlipTransform(mirroredDevice.transform.Find("Export2ChuteBin/Export2Slot"));
-                    FlipTransform(mirroredDevice.transform.Find("BoxColliderTriggerEntry"));
-                    FlipTransform(mirroredDevice.transform.Find("BoxColliderSlot4TriggerTypeDataDisk"));
+                    TryFlip(mirroredDevice, "SwitchOnOff");
+                    TryFlip(mirroredDevice, "ImportSlot");
+                    TryFlip(mirroredDevice, "ExportSlot");
+                    TryFlip(mirroredDevice, "Export2Slot");
+                    TryFlip(mirroredDevice, "BoxColliderTriggerEntry");
+                    TryFlip(mirroredDevice, "BoxColliderSlot4TriggerTypeDataDisk");
                 }
             },
             new MirrorDefinition("StructureVolumePump") {
@@ -279,9 +303,9 @@ namespace MirroredAtmospherics.Scripts
                 },
                 postfix = mirroredDevice => {
                     // restore increase/decrease buttons position on setting wheel
-                    FlipTransform(mirroredDevice.FindTransform("BoxColliderOnOffTrigger"));
-                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton1Trigger"));
-                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton2Trigger"));
+                    TryFlip(mirroredDevice, "BoxColliderOnOffTrigger");
+                    TryFlip(mirroredDevice, "BoxColliderButton1Trigger");
+                    TryFlip(mirroredDevice, "BoxColliderButton2Trigger");
                 }
             },
             new MirrorDefinition("StructurePressureRegulator") {
@@ -295,9 +319,9 @@ namespace MirroredAtmospherics.Scripts
                 },
                 postfix = mirroredDevice => {
                     // restore increase/decrease buttons position on setting wheel
-                    FlipTransform(mirroredDevice.FindTransform("BoxColliderOnOffTrigger001"));
-                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton1Trigger001"));
-                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton2Trigger001"));
+                    TryFlip(mirroredDevice, "BoxColliderOnOffTrigger001");
+                    TryFlip(mirroredDevice, "BoxColliderButton1Trigger001");
+                    TryFlip(mirroredDevice, "BoxColliderButton2Trigger001");
                 }
             },
             new MirrorDefinition("StructureBackPressureRegulator") {
@@ -311,9 +335,9 @@ namespace MirroredAtmospherics.Scripts
                 },
                 postfix = mirroredDevice => {
                     // restore increase/decrease buttons position on setting wheel
-                    FlipTransform(mirroredDevice.FindTransform("BoxColliderOnOffTrigger003"));
-                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton1Trigger003"));
-                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton2Trigger003"));
+                    TryFlip(mirroredDevice, "BoxColliderOnOffTrigger003");
+                    TryFlip(mirroredDevice, "BoxColliderButton1Trigger003");
+                    TryFlip(mirroredDevice, "BoxColliderButton2Trigger003");
                 }
             },
             new MirrorDefinition("StructurePressurantValve") {
@@ -327,9 +351,9 @@ namespace MirroredAtmospherics.Scripts
                 },
                 postfix = mirroredDevice => {
                     // restore increase/decrease buttons position on setting wheel
-                    FlipTransform(mirroredDevice.FindTransform("BoxColliderOnOffTrigger"));
-                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton1Trigger001"));
-                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton2Trigger001"));
+                    TryFlip(mirroredDevice, "BoxColliderOnOffTrigger");
+                    TryFlip(mirroredDevice, "BoxColliderButton1Trigger001");
+                    TryFlip(mirroredDevice, "BoxColliderButton2Trigger001");
                 }
             },
             new MirrorDefinition("StructurePurgeValve") {
@@ -343,9 +367,9 @@ namespace MirroredAtmospherics.Scripts
                 },
                 postfix = mirroredDevice => {
                     // restore increase/decrease buttons position on setting wheel
-                    FlipTransform(mirroredDevice.FindTransform("BoxColliderOnOffTrigger"));
-                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton1Trigger"));
-                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton2Trigger"));
+                    TryFlip(mirroredDevice, "BoxColliderOnOffTrigger");
+                    TryFlip(mirroredDevice, "BoxColliderButton1Trigger");
+                    TryFlip(mirroredDevice, "BoxColliderButton2Trigger");
                 }
             },
             new MirrorDefinition("StructureLiquidVolumePump") {
@@ -359,9 +383,9 @@ namespace MirroredAtmospherics.Scripts
                 },
                 postfix = mirroredDevice => {
                     // restore increase/decrease buttons position on setting wheel
-                    FlipTransform(mirroredDevice.FindTransform("BoxColliderOnOffTrigger"));
-                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton1Trigger"));
-                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton2Trigger"));
+                    TryFlip(mirroredDevice, "BoxColliderOnOffTrigger");
+                    TryFlip(mirroredDevice, "BoxColliderButton1Trigger");
+                    TryFlip(mirroredDevice, "BoxColliderButton2Trigger");
                 }
             },
             new MirrorDefinition("StructureLiquidPressureRegulator") {
@@ -375,9 +399,9 @@ namespace MirroredAtmospherics.Scripts
                 },
                 postfix = mirroredDevice => {
                     // restore increase/decrease buttons position on setting wheel
-                    FlipTransform(mirroredDevice.FindTransform("BoxColliderOnOffTrigger001"));
-                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton1Trigger001"));
-                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton2Trigger001"));
+                    TryFlip(mirroredDevice, "BoxColliderOnOffTrigger001");
+                    TryFlip(mirroredDevice, "BoxColliderButton1Trigger001");
+                    TryFlip(mirroredDevice, "BoxColliderButton2Trigger001");
                 }
             },
             new MirrorDefinition("StructureBackLiquidPressureRegulator") {
@@ -391,9 +415,9 @@ namespace MirroredAtmospherics.Scripts
                 },
                 postfix = mirroredDevice => {
                     // restore increase/decrease buttons position on setting wheel
-                    FlipTransform(mirroredDevice.FindTransform("BoxColliderOnOffTrigger003"));
-                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton1Trigger003"));
-                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton2Trigger003"));
+                    TryFlip(mirroredDevice, "BoxColliderOnOffTrigger003");
+                    TryFlip(mirroredDevice, "BoxColliderButton1Trigger003");
+                    TryFlip(mirroredDevice, "BoxColliderButton2Trigger003");
                 }
             },
             new MirrorDefinition("StructureAdvancedFurnace") {
@@ -412,14 +436,14 @@ namespace MirroredAtmospherics.Scripts
                 },
                 postfix = mirroredDevice => {
                     // Fix buttons collider
-                    FlipTransform(mirroredDevice.FindTransform("SwitchOnOff"));
-                    FlipTransform(mirroredDevice.FindTransform("ActivateButton"));
-                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton1Trigger005"));
-                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton2Trigger005"));
-                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton3Trigger006"));
-                    FlipTransform(mirroredDevice.FindTransform("BoxColliderButton4Trigger006"));
+                    TryFlip(mirroredDevice, "SwitchOnOff");
+                    TryFlip(mirroredDevice, "ActivateButton");
+                    TryFlip(mirroredDevice, "BoxColliderButton1Trigger005");
+                    TryFlip(mirroredDevice, "BoxColliderButton2Trigger005");
+                    TryFlip(mirroredDevice, "BoxColliderButton3Trigger006");
+                    TryFlip(mirroredDevice, "BoxColliderButton4Trigger006");
                     // flip info screen (aesthetics)
-                    FlipTransform(mirroredDevice.FindTransform("ScreenNoShadow"));
+                    TryFlip(mirroredDevice, "ScreenNoShadow");
 
                 }
             },
@@ -679,7 +703,7 @@ namespace MirroredAtmospherics.Scripts
                     }
                 }
             }
-            
+
             // Do constructor conversion
             foreach (var ctorToUpdate in ctorsToUpdate)
             {
@@ -787,10 +811,18 @@ namespace MirroredAtmospherics.Scripts
             });
         }
 
-        private static void FlipPhaseChangeScreenTransform(Transform screen)
+        private static void TryFlipPhaseChangeScreenTransform(Thing device)
         {
-            FlipTransform(screen);
-            screen.localPosition = new Vector3(-.49f, screen.position.y, screen.position.z);
+            var screen = device.FindTransform("ScreenNoShadow");
+            if (screen == null)
+            {
+                LogMissingTransform(device.name, "ScreenNoShadow");
+            }
+            else
+            {
+                FlipTransform(screen);
+                screen.localPosition = new Vector3(-.49f, screen.position.y, screen.position.z);
+            }
         }
 
         [HarmonyPatch(typeof(Localization.LanguageFolder), nameof(Localization.LanguageFolder.LoadAll)), HarmonyPrefix]
